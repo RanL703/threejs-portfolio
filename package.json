@@ -1,7 +1,7 @@
 {
-  "name": "portfolio",
+  "name": "ai-developer-portfolio",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -12,6 +12,7 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
-    "three": "^0.174.0"
+    "three": "^0.174.0",
+    "gsap": "^3.12.5"
   }
 }

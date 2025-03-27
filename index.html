@@ -4,89 +4,118 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
+    <title>Ranadeep Laskar | AI Developer</title>
   </head>
   <body>
-    <canvas id="bg"></canvas>   
+    <canvas id="bg"></canvas>
+    
+    <nav class="navbar">
+      <div class="nav-logo">RL</div>
+      <ul class="nav-links">
+        <li><a href="#about" class="nav-link" data-section="0">About</a></li>
+        <li><a href="#projects" class="nav-link" data-section="1">Projects</a></li>
+        <li><a href="#skills" class="nav-link" data-section="2">Skills</a></li>
+        <li><a href="#contact" class="nav-link" data-section="3">Contact</a></li>
+      </ul>
+    </nav>
+    
+    <div class="section-indicators">
+      <div class="indicator active" data-section="0"></div>
+      <div class="indicator" data-section="1"></div>
+      <div class="indicator" data-section="2"></div>
+      <div class="indicator" data-section="3"></div>
+    </div>
 
     <main>
-
-      <header>
-        <h1>Ranadeep Laskar</h1>
-        <p>🚀 Welcome to my website!</p>
-      </header>
-
-
-      <blockquote>
-        <p>I like making stuff and putting it on the internet</p>
-      </blockquote>
-
-      <section>
-        <h2>📜 Manifesto</h2>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-
+      <section id="about" class="section">
+        <div class="profile-image-container">
+          <img src="pfp.jpg" alt="Profile" class="profile-image">
+        </div>
+        <div class="content">
+          <h1>Ranadeep Laskar</h1>
+          <h2>AI Developer</h2>
+          <p>Building intelligent systems and exploring the frontiers of artificial intelligence.</p>
+          <p>Specializing in machine learning, neural networks, and natural language processing to create solutions that adapt, learn, and evolve.</p>
+          <p>Passionate about developing AI systems that are not just powerful, but also ethical, transparent, and beneficial to humanity.</p>
+        </div>
       </section>
 
-      <section class="light">
-        <h2>👩🏽‍🚀 Projects</h2>
-
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-
-        <h2>🏆 Accomplishments</h2>
-
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-
+      <section id="projects" class="section">
+        <div class="content">
+          <h2>Projects</h2>
+          <div class="project-card">
+            <h3>RAG Bot</h3>
+            <p>Retrieval-augmented generation system that combines search algorithms with language models to provide accurate, contextual responses based on enterprise knowledge bases.</p>
+          </div>
+          
+          <div class="project-card">
+            <h3>Blog2Tweet Agent</h3>
+            <p>AI-powered content transformation tool that distills long-form blog posts into engaging tweet threads while preserving core insights and maintaining brand voice.</p>
+          </div>
+          
+          <div class="project-card">
+            <h3>Blogen</h3>
+            <p>Intelligent blog generation platform that creates data-driven content by analyzing trends, user engagement metrics, and semantic relevance to target audiences.</p>
+          </div>
+        </div>
       </section>
 
-      <blockquote>
-        <p>The best way out is always through <br>-Robert Frost</p>
-      </blockquote>
-
-      <section class="left">
-        <h2>🌮 Projects</h2>
-
-        <h3>RAG bot</h3>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-        <h3>Blog2Tweet Agent</h3>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-        <h3>blogen</h3>
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        </p>
-
+      <section id="skills" class="section">
+        <div class="content">
+          <h2>Skills</h2>
+          <div class="skills-container">
+            <div class="skill-category">
+              <h3>Machine Learning</h3>
+              <ul>
+                <li>Neural Networks</li>
+                <li>Computer Vision</li>
+                <li>Natural Language Processing</li>
+                <li>Reinforcement Learning</li>
+              </ul>
+            </div>
+            
+            <div class="skill-category">
+              <h3>Development</h3>
+              <ul>
+                <li>Python</li>
+                <li>TensorFlow</li>
+                <li>PyTorch</li>
+                <li>JavaScript</li>
+              </ul>
+            </div>
+            
+            <div class="skill-category">
+              <h3>Tools</h3>
+              <ul>
+                <li>Docker</li>
+                <li>Git</li>
+                <li>Cloud Platforms</li>
+                <li>CI/CD</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </section>
 
-      <blockquote>
-        <p>Contact me</p>
-      </blockquote>
-
-
+      <section id="contact" class="section">
+        <div class="content">
+          <h2>Contact</h2>
+          <p>Interested in collaborating on AI projects or have questions about my work?</p>
+          <p>Let's connect and explore how we can push the boundaries of what's possible with artificial intelligence.</p>
+          <div class="contact-links">
+            <a href="mailto:example@email.com" class="contact-link">Email</a>
+            <a href="https://github.com/" target="_blank" class="contact-link">GitHub</a>
+            <a href="https://linkedin.com/" target="_blank" class="contact-link">LinkedIn</a>
+            <a href="https://twitter.com/" target="_blank" class="contact-link">Twitter</a>
+          </div>
+        </div>
+      </section>
     </main>
     
+    <div class="user-controls-hint">
+      Hold <kbd>Z</kbd> for manual camera control | <kbd>↑</kbd><kbd>↓</kbd> to navigate
+    </div>
+    
     <script type="module" src="/src/main.js"></script>
-
-
-
-
-
-
   </body>
 </html>
