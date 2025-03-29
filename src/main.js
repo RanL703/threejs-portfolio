@@ -52,6 +52,22 @@ spotlight.decay = 2;
 spotlight.distance = 200;
 scene.add(spotlight);
 
+// Mobile detection
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+// Adjust particle count and quality for mobile
+if (isMobile) {
+  // Reduce particle count for better performance
+  const particleSystem = scene.getObjectByName('particleSystem');
+  if (particleSystem) {
+    const particleCount = Math.floor(particleSystem.geometry.attributes.position.count / 3);
+    console.log('Reducing particles for mobile:', particleCount);
+  }
+
+  // Set lower pixel ratio for mobile devices
+  renderer.setPixelRatio(Math.min(1.5, window.devicePixelRatio));
+}
+
 // Enhanced Neural Network visualization
 function createNeuralNetwork() {
   const group = new THREE.Group();
@@ -66,29 +82,31 @@ function createNeuralNetwork() {
     const nodesCount = layers[l];
     
     for (let n = 0; n < nodesCount; n++) {
-      const geometry = new THREE.SphereGeometry(nodeSize, 16, 16);
+      const geometry = new THREE.SphereGeometry(nodeSize, 24, 24);
       const material = new THREE.MeshPhysicalMaterial({
         color: 0x6e56cf,
         metalness: 0.7,
         roughness: 0.2,
         emissive: 0x6e56cf,
-        emissiveIntensity: 0.2,
-        clearcoat: 0.8,
-        clearcoatRoughness: 0.2
+        emissiveIntensity: 0.3,
+        clearcoat: 1.0,
+        clearcoatRoughness: 0.1,
+        envMapIntensity: 1.0
       });
       
       const node = new THREE.Mesh(geometry, material);
       const y = (n - (nodesCount - 1) / 2) * 5;
       node.position.set(l * layerDistance - 20, y, 0);
       
-      // Add glow effect
+      // Add enhanced glow effect
       const glowMaterial = new THREE.MeshBasicMaterial({
         color: 0x6e56cf,
         transparent: true,
-        opacity: 0.15
+        opacity: 0.15,
+        blending: THREE.AdditiveBlending
       });
       const glowSphere = new THREE.Mesh(
-        new THREE.SphereGeometry(nodeSize * 1.4, 16, 16),
+        new THREE.SphereGeometry(nodeSize * 1.6, 16, 16),
         glowMaterial
       );
       node.add(glowSphere);
@@ -133,13 +151,30 @@ function createNeuralNetwork() {
           group.add(line);
           
           // Add signal that travels along connection
-          const signalGeometry = new THREE.SphereGeometry(0.15, 8, 8);
-          const signalMaterial = new THREE.MeshBasicMaterial({
+          const signalGeometry = new THREE.SphereGeometry(0.3, 12, 12);
+          const signalMaterial = new THREE.MeshPhysicalMaterial({
             color: 0x31c4be,
+            emissive: 0x31c4be,
+            emissiveIntensity: 0.5,
             transparent: true,
-            opacity: 0
+            opacity: 0,
+            metalness: 0.5,
+            roughness: 0.2
           });
           const signal = new THREE.Mesh(signalGeometry, signalMaterial);
+          
+          // Add glow effect to signal
+          const signalGlow = new THREE.Mesh(
+            new THREE.SphereGeometry(0.4, 8, 8),
+            new THREE.MeshBasicMaterial({
+              color: 0x31c4be,
+              transparent: true,
+              opacity: 0,
+              blending: THREE.AdditiveBlending
+            })
+          );
+          signal.add(signalGlow);
+          
           group.add(signal);
           
           connections.push({
@@ -200,6 +235,7 @@ function createNeuralNetwork() {
         if (conn.progress >= 1) {
           conn.active = false;
           conn.signal.material.opacity = 0;
+          conn.signal.children[0].material.opacity = 0; // Reset glow opacity
           conn.material.opacity = 0.4;
         } else {
           // Move signal along line
@@ -216,6 +252,14 @@ function createNeuralNetwork() {
           }
           conn.signal.material.opacity = opacity;
           
+          // Update glow effect with higher opacity for better visibility
+          const glowOpacity = opacity * 0.7;
+          conn.signal.children[0].material.opacity = glowOpacity;
+          
+          // Pulse animation for signal size
+          const pulseScale = 1 + Math.sin(time * 10) * 0.2;
+          conn.signal.scale.set(pulseScale, pulseScale, pulseScale);
+          
           // Pulse connection when signal is traveling
           conn.material.opacity = 0.4 + Math.sin(time * 10) * 0.2;
         }
@@ -228,73 +272,119 @@ function createNeuralNetwork() {
 
 // Enhanced particle system
 function createParticleSystem() {
-  const particleCount = 300;
-  const particles = new THREE.BufferGeometry();
-  const positions = new Float32Array(particleCount * 3);
-  const sizes = new Float32Array(particleCount);
-  const colors = new Float32Array(particleCount * 3);
+  // Adjust particle count based on device
+  const particleCount = isMobile ? 50 : 150;
   
+  // Create instanced mesh for spheres
+  const sphereGeometry = new THREE.SphereGeometry(0.2, 8, 8);
+  const sphereMaterial = new THREE.MeshPhysicalMaterial({
+    color: 0x6e56cf,
+    metalness: 0.7,
+    roughness: 0.2,
+    emissive: 0x6e56cf,
+    emissiveIntensity: 0.2,
+    transparent: true,
+    opacity: 0.8
+  });
+  
+  // Create instanced mesh
+  const instancedMesh = new THREE.InstancedMesh(
+    sphereGeometry,
+    sphereMaterial,
+    particleCount
+  );
+  instancedMesh.name = 'particleSystem';
+  
+  // Matrix for position and scale
+  const matrix = new THREE.Matrix4();
+  const positions = [];
+  const sizes = [];
+  const colors = [];
+  
+  // Set initial positions and store data
   for (let i = 0; i < particleCount; i++) {
     // Create a sphere of particles
     const radius = 25 + Math.random() * 10;
     const theta = Math.random() * Math.PI * 2;
     const phi = Math.acos(2 * Math.random() - 1);
     
-    positions[i * 3] = radius * Math.sin(phi) * Math.cos(theta);
-    positions[i * 3 + 1] = radius * Math.sin(phi) * Math.sin(theta);
-    positions[i * 3 + 2] = radius * Math.cos(phi);
+    const x = radius * Math.sin(phi) * Math.cos(theta);
+    const y = radius * Math.sin(phi) * Math.sin(theta);
+    const z = radius * Math.cos(phi);
     
-    // Varied sizes
-    sizes[i] = 0.1 + Math.random() * 0.9;
+    // Size variation
+    const size = 0.1 + Math.random() * 0.9;
     
     // Color gradient from blue to purple
     const color = new THREE.Color();
     color.setHSL(0.6 + Math.random() * 0.1, 0.9, 0.6);
-    colors[i * 3] = color.r;
-    colors[i * 3 + 1] = color.g;
-    colors[i * 3 + 2] = color.b;
+    
+    // Store positions for animation
+    positions.push(x, y, z);
+    sizes.push(size);
+    colors.push(color.r, color.g, color.b);
+    
+    // Set instance matrix
+    matrix.makeTranslation(x, y, z);
+    matrix.scale(new THREE.Vector3(size, size, size));
+    instancedMesh.setMatrixAt(i, matrix);
+    instancedMesh.setColorAt(i, color);
   }
   
-  particles.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  particles.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
-  particles.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-  
-  const material = new THREE.PointsMaterial({
-    size: 0.5,
-    sizeAttenuation: true,
-    transparent: true,
-    opacity: 0.8,
-    vertexColors: true,
-    blending: THREE.AdditiveBlending
-  });
-  
-  const points = new THREE.Points(particles, material);
+  instancedMesh.instanceMatrix.needsUpdate = true;
+  if (instancedMesh.instanceColor) instancedMesh.instanceColor.needsUpdate = true;
   
   // Add update method
-  points.update = function(time, scrollY) {
-    const positions = points.geometry.attributes.position.array;
-    const sizes = points.geometry.attributes.size.array;
-    
-    for (let i = 0; i < particleCount; i++) {
-      // Subtle movement based on time and scroll
-      const x = i * 3;
-      const y = i * 3 + 1;
-      const z = i * 3 + 2;
-      
-      // Create flowing motion
-      positions[y] += Math.sin(time + i * 0.1) * 0.02;
-      positions[x] += Math.cos(time + i * 0.1) * 0.02;
-      
-      // Scroll effect - expand/contract based on scroll
-      const scrollFactor = 1 + (scrollY * 0.0002);
-      sizes[i] = (0.1 + Math.random() * 0.9) * (1 + Math.sin(time + i) * 0.2) * scrollFactor;
-    }
-    
-    points.geometry.attributes.position.needsUpdate = true;
-    points.geometry.attributes.size.needsUpdate = true;
+  instancedMesh.userData = {
+    positions: positions,
+    sizes: sizes,
+    colors: colors,
+    originalPositions: [...positions]
   };
   
-  return points;
+  instancedMesh.update = function(time, scrollY) {
+    // Update frequency - less frequent on mobile for better performance
+    const updateFrequency = isMobile ? 3 : 1;
+    if (isMobile && Math.floor(time * 10) % updateFrequency !== 0) {
+      return; // Skip some updates on mobile
+    }
+    
+    const matrix = new THREE.Matrix4();
+    
+    for (let i = 0; i < particleCount; i++) {
+      const idx = i * 3;
+      
+      // Get original position
+      const origX = this.userData.originalPositions[idx];
+      const origY = this.userData.originalPositions[idx + 1];
+      const origZ = this.userData.originalPositions[idx + 2];
+      
+      // Create flowing motion
+      const x = origX + Math.cos(time + i * 0.1) * 0.5;
+      const y = origY + Math.sin(time + i * 0.1) * 0.5;
+      const z = origZ;
+      
+      // Scale based on scroll
+      const scrollFactor = 1 + (scrollY * 0.0002);
+      const size = this.userData.sizes[i] * (1 + Math.sin(time + i) * 0.2) * scrollFactor;
+      
+      // Update instance matrix
+      matrix.makeTranslation(x, y, z);
+      matrix.scale(new THREE.Vector3(size, size, size));
+      this.setMatrixAt(i, matrix);
+      
+      // Pulsating color
+      const color = new THREE.Color();
+      const hue = (0.6 + Math.sin(time * 0.2 + i * 0.05) * 0.1) % 1;
+      color.setHSL(hue, 0.9, 0.6);
+      this.setColorAt(i, color);
+    }
+    
+    this.instanceMatrix.needsUpdate = true;
+    if (this.instanceColor) this.instanceColor.needsUpdate = true;
+  };
+  
+  return instancedMesh;
 }
 
 // Enhanced grid
@@ -348,21 +438,41 @@ function createGrid() {
 // Interactive torus
 function createTorus() {
   const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+  
+  // Create wireframe material
   const material = new THREE.MeshPhysicalMaterial({ 
     color: 0xff6347,
     metalness: 0.7,
     roughness: 0.2,
     clearcoat: 1.0,
-    clearcoatRoughness: 0.2
+    clearcoatRoughness: 0.2,
+    wireframe: true, // Make it wireframe
+    wireframeLinewidth: 1
   });
   
   const torus = new THREE.Mesh(geometry, material);
+  
+  // Add a second torus with different wireframe for effect
+  const innerGeometry = new THREE.TorusKnotGeometry(9.5, 2.8, 80, 16);
+  const innerMaterial = new THREE.MeshBasicMaterial({
+    color: 0x00ffff,
+    wireframe: true,
+    transparent: true,
+    opacity: 0.3
+  });
+  
+  const innerTorus = new THREE.Mesh(innerGeometry, innerMaterial);
+  torus.add(innerTorus);
   
   // Add update method
   torus.update = function(time, scrollY) {
     // Complex rotation based on time
     torus.rotation.x = time * 0.3;
     torus.rotation.y = time * 0.2;
+    
+    // Opposite rotation for inner torus
+    innerTorus.rotation.x = -time * 0.1;
+    innerTorus.rotation.z = time * 0.15;
     
     // Scale based on scroll
     const scrollFactor = 1 + Math.sin(scrollY * 0.001) * 0.2;
@@ -372,6 +482,10 @@ function createTorus() {
     const hue = (time * 0.05 + scrollY * 0.0005) % 1;
     const color = new THREE.Color().setHSL(hue, 0.8, 0.5);
     torus.material.color = color;
+    
+    // Complementary color for inner torus
+    const innerHue = (hue + 0.5) % 1;
+    innerTorus.material.color = new THREE.Color().setHSL(innerHue, 0.7, 0.6);
   };
   
   return torus;
@@ -653,29 +767,13 @@ function handleScroll(e) {
 }
 
 function updateActiveNavAndIndicators(sectionIndex) {
-  // Update nav links
-  document.querySelectorAll('.nav-link').forEach((link) => {
-    link.classList.remove('active');
-  });
-  const activeNavLink = document.querySelector(`.nav-link[data-section="${sectionIndex}"]`);
-  if (activeNavLink) activeNavLink.classList.add('active');
-  
-  // Update indicators
+  // Update indicators only
   document.querySelectorAll('.indicator').forEach((indicator) => {
     indicator.classList.remove('active');
   });
   const activeIndicator = document.querySelector(`.indicator[data-section="${sectionIndex}"]`);
   if (activeIndicator) activeIndicator.classList.add('active');
 }
-
-// Update navigation click handlers
-document.querySelectorAll('.nav-link').forEach((link) => {
-  link.addEventListener('click', (e) => {
-    e.preventDefault();
-    const sectionIndex = parseInt(link.getAttribute('data-section'));
-    smoothScrollToSection(sectionIndex);
-  });
-});
 
 // Update section indicator click handlers
 document.querySelectorAll('.indicator').forEach((indicator) => {
@@ -724,8 +822,10 @@ function animate() {
   try {
     const time = Date.now() * 0.001;
     
+    // Reduced animation complexity on mobile
+    const easeFactor = isMobile ? 0.1 : 0.05; // Faster transitions on mobile
+    
     // Smoothly move camera to target position with easing
-    const easeFactor = 0.05;
     camera.position.x += (targetCameraX - camera.position.x) * easeFactor;
     camera.position.y += (targetCameraY - camera.position.y) * easeFactor;
     camera.position.z += (targetCameraZ - camera.position.z) * easeFactor;
@@ -760,20 +860,23 @@ function animate() {
     spotlight.position.y = camera.position.y * 0.5 + 20;
     spotlight.position.z = camera.position.z * 0.5;
     
+    // Skip some updates on mobile for better performance
+    const shouldUpdateAll = !isMobile || Math.floor(time * 2) % 2 === 0;
+    
     // Update all objects with time and scroll
     if (neuralNetwork && typeof neuralNetwork.update === 'function') {
       neuralNetwork.update(time, scrollY);
     }
     
-    if (particleSystem && typeof particleSystem.update === 'function') {
+    if (particleSystem && typeof particleSystem.update === 'function' && shouldUpdateAll) {
       particleSystem.update(time, scrollY);
     }
     
-    if (grid && typeof grid.update === 'function') {
+    if (grid && typeof grid.update === 'function' && shouldUpdateAll) {
       grid.update(time, scrollY);
     }
     
-    if (torus && typeof torus.update === 'function') {
+    if (torus && typeof torus.update === 'function' && shouldUpdateAll) {
       torus.update(time, scrollY);
     }
     

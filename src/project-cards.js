@@ -2,6 +2,14 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Initialize the project cards functionality
   initProjectCards();
+  
+  // Add mobile detection
+  window.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  
+  // Add mobile specific interactions
+  if (window.isMobile) {
+    setupMobileInteractions();
+  }
 });
 
 function initProjectCards() {
@@ -78,15 +86,62 @@ function createScrollButtons(container) {
   container.addEventListener('scroll', () => {
     updateScrollButtonVisibility(container, leftButton, rightButton);
   });
+  
+  // Initial show buttons for mobile
+  if (window.isMobile) {
+    leftButton.style.opacity = '1';
+    rightButton.style.opacity = '1';
+  }
 }
 
 function updateScrollButtonVisibility(container, leftButton, rightButton) {
-  // Show left button only if we're not at the beginning
+  // On mobile, always show buttons
+  if (window.isMobile) {
+    leftButton.style.opacity = '1';
+    rightButton.style.opacity = '1';
+    return;
+  }
+  
+  // On desktop, show based on scroll position
   leftButton.style.opacity = container.scrollLeft > 0 ? '1' : '0';
   leftButton.style.pointerEvents = container.scrollLeft > 0 ? 'auto' : 'none';
   
-  // Show right button only if we're not at the end
   const maxScroll = container.scrollWidth - container.clientWidth;
   rightButton.style.opacity = container.scrollLeft < maxScroll - 10 ? '1' : '0';
   rightButton.style.pointerEvents = container.scrollLeft < maxScroll - 10 ? 'auto' : 'none';
+}
+
+function setupMobileInteractions() {
+  // Improve section navigation for touch
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav-link');
+  
+  // Make navigation more touch-friendly
+  navLinks.forEach(link => {
+    link.addEventListener('touchstart', function() {
+      this.style.backgroundColor = 'rgba(110, 86, 207, 0.2)';
+    });
+    
+    link.addEventListener('touchend', function() {
+      this.style.backgroundColor = 'transparent';
+    });
+  });
+  
+  // Add visible scrolling hint for first-time users
+  const mobileScrollHint = document.createElement('div');
+  mobileScrollHint.classList.add('mobile-scroll-hint');
+  mobileScrollHint.innerHTML = 'Swipe <span class="arrow">←</span> <span class="arrow">→</span> to browse projects';
+  
+  const projectsSection = document.getElementById('projects');
+  if (projectsSection) {
+    projectsSection.appendChild(mobileScrollHint);
+    
+    // Hide the hint after 6 seconds with a fade-out
+    setTimeout(() => {
+      mobileScrollHint.style.opacity = '0';
+      setTimeout(() => {
+        mobileScrollHint.remove();
+      }, 1000);
+    }, 6000);
+  }
 } 

@@ -117,7 +117,7 @@ main {
   height: 100vh;
   position: relative;
   z-index: 10;
-  padding-left: 80px; /* Width of navbar */
+  padding-left: 0; /* Remove navbar padding */
   overflow-y: auto;
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
@@ -223,6 +223,8 @@ p {
   scroll-snap-type: x mandatory;
   scrollbar-width: thin;
   scrollbar-color: var(--primary-color) var(--dark-accent);
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  width: 100%;
 }
 
 .projects-container::-webkit-scrollbar {
@@ -360,12 +362,15 @@ p {
 /* Update projects section layout */
 #projects.section {
   overflow: hidden;
+  position: relative;
 }
 
 #projects .content {
   max-width: 90%;
   overflow: visible;
   padding: 2rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Skills Section */
@@ -373,6 +378,7 @@ p {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 1.5rem;
+  width: 100%;
 }
 
 .skill-category {
@@ -406,11 +412,18 @@ p {
 }
 
 /* Contact Section */
+#contact .content {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .contact-links {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   margin-top: 1.5rem;
+  justify-content: center;
 }
 
 .contact-link {
@@ -458,64 +471,64 @@ p {
   flex-direction: column;
   gap: 1rem;
   z-index: 100;
+  background-color: rgba(15, 15, 15, 0.5);
+  padding: 10px 5px;
+  border-radius: 20px;
+  backdrop-filter: blur(5px);
 }
 
 .indicator {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   background-color: var(--text-muted);
   transition: all 0.3s ease;
   cursor: pointer;
+  position: relative;
+}
+
+.indicator:hover {
+  background-color: var(--text-color);
 }
 
 .indicator.active {
   background-color: var(--primary-color);
   transform: scale(1.3);
+  box-shadow: 0 0 10px var(--primary-color);
+}
+
+/* Tooltip labels for indicators */
+.indicator::before {
+  content: attr(data-label);
+  position: absolute;
+  right: 25px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(15, 15, 15, 0.8);
+  color: var(--text-color);
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.indicator:hover::before {
+  opacity: 1;
 }
 
 /* Media Queries */
 @media (max-width: 768px) {
-  .navbar {
-    width: 100%;
-    height: 60px;
-    flex-direction: row;
-    bottom: 0;
-    top: auto;
-    border-right: none;
-    border-top: 1px solid var(--border-color);
-  }
-
-  .nav-logo {
-    display: none;
-  }
-
-  .nav-links {
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-around;
-  }
-
-  .nav-link {
-    writing-mode: horizontal-tb;
-    transform: none;
-    font-size: 0.7rem;
-  }
-
-  .nav-link::after {
-    width: 0;
-    height: 2px;
-    bottom: -4px;
-    left: 0;
-  }
-
   main {
     padding-left: 0;
-    padding-bottom: 60px;
+    padding-bottom: 0; /* Remove navbar padding */
   }
   
   .section-indicators {
-    display: none;
+    display: block; /* Show indicators on mobile */
+    right: 10px; /* Position closer to edge on mobile */
   }
   
   h1 {
@@ -530,46 +543,145 @@ p {
     justify-content: center;
   }
   
+  /* Responsive content width */
+  .content {
+    max-width: 100%;
+    padding: 1.5rem;
+  }
+  
   /* Responsive profile image */
   .profile-image-container {
+    position: relative;
     width: 150px;
     height: 150px;
-    left: 50%;
-    top: 25%;
+    left: auto;
+    top: auto;
+    margin: 0 auto 2rem auto;
+    transform: none;
+    animation: floatMobile 4s ease-in-out infinite;
+  }
+  
+  /* Fix about section layout */
+  #about {
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .about-container {
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem;
   }
   
   #about .content {
     margin-left: 0;
     max-width: 100%;
-    margin-top: 30%;
+    margin-top: 0;
   }
   
   /* Update project card layout for mobile */
   .projects-container {
-    gap: 1rem;
+    padding: 0.5rem 0;
   }
   
   .project-card {
-    flex: 0 0 calc(100% - 2rem);
+    flex: 0 0 85%;
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
   }
   
-  .project-image-container {
-    height: 160px;
-  }
-  
-  /* Update scroll buttons for mobile */
+  /* Make scroll buttons more visible on mobile */
   .scroll-button {
+    opacity: 0.8;
     width: 32px;
     height: 32px;
-    font-size: 1rem;
   }
   
   .left-button {
-    left: 10px;
+    left: 5px;
   }
   
   .right-button {
-    right: 10px;
+    right: 5px;
+  }
+  
+  /* Fix skills layout for mobile */
+  #skills.section {
+    overflow-x: hidden;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #skills .content {
+    margin: 0 auto;
+    max-width: 95%;
+    width: 95%;
+    padding: 1.2rem;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  .skills-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    width: 100%;
+  }
+  
+  .skill-category {
+    padding: 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .skill-category ul {
+    margin-top: 0.5rem;
+  }
+  
+  /* Fix user controls hint */
+  .user-controls-hint {
+    bottom: 15px;
+    right: 15px;
+    font-size: 0.7rem;
+    padding: 5px 8px;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* For small mobile devices */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 1.8rem;
+  }
+  
+  h2 {
+    font-size: 1.3rem;
+  }
+  
+  .section {
+    padding: 60px 15px;
+  }
+  
+  .content {
+    padding: 1rem;
+  }
+  
+  .profile-image-container {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .project-image-container {
+    height: 140px;
+  }
+  
+  .contact-link {
+    padding: 0.4rem 1rem;
+    font-size: 0.9rem;
+    min-width: 100px;
+    text-align: center;
   }
 }
 
@@ -634,10 +746,7 @@ p {
 
 /* Profile image styling */
 .profile-image-container {
-  position: absolute;
-  left: 15%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   z-index: 20;
   width: 220px;
   height: 220px;
@@ -645,7 +754,6 @@ p {
   overflow: hidden;
   border: 4px solid var(--primary-color);
   box-shadow: 0 0 20px rgba(110, 86, 207, 0.5);
-  animation: float 6s ease-in-out infinite;
 }
 
 .profile-image {
@@ -659,24 +767,22 @@ p {
   transform: scale(1.05);
 }
 
-@keyframes float {
-  0% {
+/* Desktop profile image positioning */
+@media (min-width: 769px) {
+  .profile-image-container {
+    position: absolute;
+    left: 15%;
+    top: 50%;
     transform: translate(-50%, -50%);
-    box-shadow: 0 0 20px rgba(110, 86, 207, 0.5);
-  }
-  50% {
-    transform: translate(-50%, -55%);
-    box-shadow: 0 15px 25px rgba(110, 86, 207, 0.3);
-  }
-  100% {
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 20px rgba(110, 86, 207, 0.5);
+    animation: float 6s ease-in-out infinite;
   }
 }
 
 #skills .content {
   margin-right: 30%; /* Offset to the left to make room for the network */
   max-width: 60%;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Scroll buttons for projects */
@@ -731,4 +837,166 @@ p {
 
 .project-card.touch-hover .gif-image {
   opacity: 1;
+}
+
+/* About section layout */
+.about-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+/* Better center about content for all screens */
+#about .content {
+  max-width: 60%;
+  margin-left: 30%;
+  z-index: 20;
+}
+
+/* Ensure profile doesn't overflow on any screen size */
+@media (max-width: 768px) {
+  .about-container {
+    flex-direction: column;
+    padding: 1rem;
+    margin-top: 5vh; /* Add some top margin on mobile */
+  }
+  
+  #about .content {
+    margin-left: 0;
+    max-width: 100%;
+    margin-top: 1rem;
+  }
+
+  /* Better positioning for profile image on mobile */
+  .profile-image-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 0 15px rgba(110, 86, 207, 0.5);
+  }
+  
+  /* Decrease section padding on mobile */
+  .section {
+    padding: 60px 15px;
+  }
+  
+  /* Make sure content is centered and doesn't overflow */
+  .content {
+    width: 90%;
+    max-width: 100%;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 360px) {
+  .profile-image-container {
+    width: 120px;
+    height: 120px;
+  }
+  
+  h1 {
+    font-size: 1.6rem;
+  }
+  
+  h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  p {
+    font-size: 0.9rem;
+  }
+}
+
+/* Mobile scroll hint */
+.mobile-scroll-hint {
+  position: absolute;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  background-color: rgba(15, 15, 15, 0.9);
+  color: var(--text-color);
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  z-index: 50;
+  opacity: 0.95;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border-color);
+  max-width: 90%;
+  white-space: nowrap;
+}
+
+.mobile-scroll-hint .arrow {
+  display: inline-block;
+  color: var(--primary-color);
+  font-weight: bold;
+  animation: pulse 1.5s infinite;
+  margin: 0 3px;
+}
+
+.mobile-scroll-hint .arrow:nth-child(2) {
+  animation-delay: 0.75s;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0% {
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px rgba(110, 86, 207, 0.5);
+  }
+  50% {
+    transform: translate(-50%, -55%);
+    box-shadow: 0 15px 25px rgba(110, 86, 207, 0.3);
+  }
+  100% {
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px rgba(110, 86, 207, 0.5);
+  }
+}
+
+@keyframes floatMobile {
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 0 15px rgba(110, 86, 207, 0.5);
+  }
+  50% {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 20px rgba(110, 86, 207, 0.3);
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 0 15px rgba(110, 86, 207, 0.5);
+  }
+}
+
+/* Mobile profile animation */
+@media (max-width: 768px) {
+  .profile-image-container {
+    animation: floatMobile 4s ease-in-out infinite;
+  }
 }
